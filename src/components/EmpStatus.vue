@@ -416,20 +416,25 @@ export default {
   },
   methods: {
     detailView(row) {
-      // emps 데이터 받아옴
-      this.$store.state.empStatus.empsData.map((item, index) => {
-        item.selected = item === row;
-        this.$set(this.$store.state.empStatus.empsData, index, item);
-      });
-
-      // 사원번호, 조직, 이름 입력
-      this.empNo = row.empn;
-      this.detailTeam = row.team;
-      this.detailName = row.name;
-
-      this.detailViewDataAxios()
+      this.empsDataAxios(row)
+        .then(this.detailViewDataAxios())
         .then(this.detailViewDataInput())
         .then(this.dialogDetailOpen());
+    },
+    empsDataAxios(row) {
+      return new Promise((resolve) => {
+        // emps 데이터 받아옴
+        this.$store.state.empStatus.empsData.map((item, index) => {
+          item.selected = item === row;
+          this.$set(this.$store.state.empStatus.empsData, index, item);
+        });
+
+        // 사원번호, 조직, 이름 입력
+        this.empNo = row.empn;
+        this.detailTeam = row.team;
+        this.detailName = row.name;
+        resolve();
+      });
     },
 
     dialogDetailOpen() {
