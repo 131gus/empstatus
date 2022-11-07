@@ -76,7 +76,7 @@
                   <input
                     v-model="detailInCom"
                     type="datetime-local"
-                    style="width: 100%; height: 40px; outline: none"
+                    style="width: 100%; height: 39px; outline: none"
                   />
                 </v-card>
               </v-col>
@@ -93,7 +93,7 @@
                   <input
                     v-model="detailOutGo"
                     type="datetime-local"
-                    style="width: 100%; height: 40px; outline: none"
+                    style="width: 100%; height: 39px; outline: none"
                   />
                 </v-card>
               </v-col>
@@ -136,7 +136,8 @@
                   <input
                     v-model="detailBreak"
                     type="number"
-                    style="width: 100%; height: 40px; outline: none"
+                    step="0.25"
+                    style="width: 100%; height: 39px; outline: none"
                   />
                 </v-card>
               </v-col>
@@ -153,7 +154,8 @@
                   <input
                     v-model="detailOuting"
                     type="number"
-                    style="width: 100%; height: 40px; outline: none"
+                    step="0.25"
+                    style="width: 100%; height: 39px; outline: none"
                   />
                 </v-card>
               </v-col>
@@ -183,7 +185,8 @@
                   <input
                     v-model="detailOverTime"
                     type="number"
-                    style="width: 100%; height: 40px; outline: none"
+                    step="0.25"
+                    style="width: 100%; height: 39px; outline: none"
                   />
                 </v-card>
               </v-col>
@@ -200,7 +203,8 @@
                   <input
                     v-model="detailNight"
                     type="number"
-                    style="width: 100%; height: 40px; outline: none"
+                    step="0.25"
+                    style="width: 100%; height: 39px; outline: none"
                   />
                 </v-card>
               </v-col>
@@ -228,6 +232,24 @@
               <v-col cols="8">
                 <v-card class="pa-2" color="grey lighten-4" outlined>
                   <input v-model="detailWork" type="number" disabled />
+                </v-card>
+              </v-col>
+            </v-row>
+
+            <v-row no-gutters>
+              <v-col cols="4" class="mb-2">
+                <v-card class="pa-2" color="grey lighten-3" outlined>
+                  <span>의견</span>
+                </v-card>
+              </v-col>
+              <v-col cols="8">
+                <v-card class="pl-2 pr-2" outlined>
+                  <input
+                    v-model="detailOpinion"
+                    type="text"
+                    placeholder="의견 작성"
+                    style="width: 100%; height: 39px; outline: none"
+                  />
                 </v-card>
               </v-col>
             </v-row>
@@ -368,12 +390,14 @@ export default {
       detailOverMax: "", //특근 초과시간
       detailOverDeduct: "", //특근 차감시간
       detailOverTime: "", //특근 인정시간
+      detailOpinion: "", // 의견
 
       dialogDetail: false,
       options: {},
       totalEmps: 0,
       emps: [],
       empDetail: [],
+      timeDataCalc: {},
       empNo: "",
       headersEmp: [
         {
@@ -395,6 +419,12 @@ export default {
     };
   },
   watch: {
+    options: {
+      handler() {
+        this.getDataFromApi();
+      },
+      deep: true,
+    },
     inputDate(newVal, oldVal) {
       if (oldVal != newVal) {
         this.inputDate = newVal;
@@ -407,135 +437,200 @@ export default {
         this.getData(this.inputDate);
       }
     },
-    options: {
-      handler() {
-        this.getDataFromApi();
-      },
-      deep: true,
-    },
+    // detailInCom() {
+    //   this.newTimeCalc().then(() => this.newTimeCalc2());
+    // },
+    // detailOutGo() {
+    //   this.newTimeCalc().then(() => this.newTimeCalc2());
+    // },
+    // detailBreak() {
+    //   this.newTimeCalc().then(() => this.newTimeCalc2());
+    // },
+    // detailOuting() {
+    //   this.newTimeCalc().then(() => this.newTimeCalc2());
+    // },
+    // detailNight() {
+    //   this.newTimeCalc().then(() => this.newTimeCalc2());
+    // },
+    // detailOverAccept() {
+    //   this.newTimeCalc().then(() => this.newTimeCalc2());
+    // },
   },
   methods: {
-    detailView(row) {
-      this.empsDataAxios(row)
-        .then(this.detailViewDataAxios())
-        .then(this.detailViewDataInput())
-        .then(this.dialogDetailOpen());
-    },
-    empsDataAxios(row) {
+    newTimeCalc() {
       return new Promise((resolve) => {
-        // emps 데이터 받아옴
-        this.$store.state.empStatus.empsData.map((item, index) => {
-          item.selected = item === row;
-          this.$set(this.$store.state.empStatus.empsData, index, item);
-        });
-
-        // 사원번호, 조직, 이름 입력
-        this.empNo = row.empn;
-        this.detailTeam = row.team;
-        this.detailName = row.name;
+        setTimeout(() => {
+          this.$store.commit(`empStatus/fetchTimeCalc`, {
+            empn: this.empNo,
+            date: this.inputDate,
+            timein: this.detailInCom,
+            timeout: this.detailOutGo,
+            outing: this.detailOuting,
+          });
+        }, 30);
         resolve();
       });
     },
 
+    newTimeCalc2() {
+      return new Promise((resolve) => {
+        setTimeout(() => {
+          this.timeDataCalc = this.$store.state.empStatus.timeCalc;
+          this.detailTotal = this.timeDataCalc.total;
+          this.detailDeduct =
+            Number(this.detailBreak) + Number(this.detailOuting);
+          this.detailWork =
+            Number(this.detailTotal) - Number(this.detailDeduct);
+          this.detailSchedule = this.timeDataCalc.schedule;
+        }, 30);
+        resolve();
+      });
+    },
+
+    // 사원 상세 정보 받아오고 입력 후 모달 오픈
+    detailView(event, { item }) {
+      // row 사원 정보 받아오기
+      this.empInfo = Object.assign({}, item);
+
+      this.detailViewDataAxios()
+        .then(() => this.detailViewDataInput())
+        .then(() => this.dialogDetailOpen());
+    },
+
+    // 모달 오픈
     dialogDetailOpen() {
       return new Promise((resolve) => {
-        this.dialogDetail = true;
-        resolve();
+        setTimeout(() => {
+          this.dialogDetail = true;
+          resolve();
+        }, 10);
       });
     },
 
+    // 사원 상세정보 데이터 통신
     detailViewDataAxios() {
       return new Promise((resolve) => {
-        this.$store.dispatch(`empStatus/fetchEmpDetailData`, {
-          empNo: this.empNo,
-          date: this.inputDate,
-        });
-        this.empDetail = this.$store.state.empStatus.empDetailData;
-        resolve();
+        setTimeout(() => {
+          this.$store.dispatch(`empStatus/fetchEmpDetailData`, {
+            empn: this.empInfo.empn,
+            date: this.inputDate,
+          });
+
+          // 사원번호, 조직, 이름 입력
+          this.empNo = this.empInfo.empn;
+          this.detailTeam = this.empInfo.team;
+          this.detailName = this.empInfo.name;
+
+          resolve();
+        }, 20);
       });
     },
 
+    // 사원 상세정보 입력
     detailViewDataInput() {
       return new Promise((resolve) => {
-        // 출퇴근 시간 입력
-        if (!this.empDetail.incomming) {
-          this.detailInCom = "";
-        } else {
-          this.detailInCom = this.empDetail.incomming;
-        }
+        setTimeout(() => {
+          this.empDetail = this.$store.state.empStatus.empDetailData;
 
-        if (!this.empDetail.outgoing) {
-          this.detailOutGo = "";
-        } else {
-          this.detailOutGo = this.empDetail.outgoing;
-        }
+          // 출퇴근 시간 입력
+          if (this.empDetail.err == 1) {
+            this.detailInCom = this.inputDate + " 09:00:00";
+            this.detailOutGo = this.inputDate + " 18:00:00";
+            this.detailTotal = "0";
+            this.detailSchedule = "0";
+            this.detailBreak = "0";
+            this.detailOuting = "0";
+            this.detailNight = "0";
+            this.detailDeduct = "0";
+            this.detailWork = "0";
+            this.detailOverAccept = "0";
+            this.detailOverMax = "0";
+            this.detailOverDeduct = "0";
+            this.detailOverTime = "0";
+          } else {
+            if (!this.empDetail.incomming) {
+              this.detailInCom = "";
+            } else {
+              this.detailInCom = this.empDetail.incomming;
+            }
 
-        if (!this.empDetail.total) {
-          this.detailTotal = "0";
-        } else {
-          this.detailTotal = this.empDetail.total;
-        }
+            if (!this.empDetail.outgoing) {
+              this.detailOutGo = "";
+            } else {
+              this.detailOutGo = this.empDetail.outgoing;
+            }
 
-        if (!this.empDetail.schedule) {
-          this.detailSchedule = "0";
-        } else {
-          this.detailSchedule = this.empDetail.schedule;
-        }
+            if (!this.empDetail.total) {
+              this.detailTotal = "0";
+            } else {
+              this.detailTotal = this.empDetail.total;
+            }
 
-        if (!this.empDetail.break) {
-          this.detailBreak = "0";
-        } else {
-          this.detailBreak = this.empDetail.break;
-        }
+            if (!this.empDetail.schedule) {
+              this.detailSchedule = "0";
+            } else {
+              this.detailSchedule = this.empDetail.schedule;
+            }
 
-        if (!this.empDetail.outing) {
-          this.detailOuting = "0";
-        } else {
-          this.detailOuting = this.empDetail.outing;
-        }
+            if (!this.empDetail.break) {
+              this.detailBreak = "0";
+            } else {
+              this.detailBreak = this.empDetail.break;
+            }
 
-        if (!this.empDetail.night) {
-          this.detailNight = "0";
-        } else {
-          this.detailNight = this.empDetail.night;
-        }
+            if (!this.empDetail.outing) {
+              this.detailOuting = "0";
+            } else {
+              this.detailOuting = this.empDetail.outing;
+            }
 
-        if (!this.empDetail.deduct) {
-          this.detailDeduct = "0";
-        } else {
-          this.detailDeduct = this.empDetail.deduct;
-        }
+            if (!this.empDetail.night) {
+              this.detailNight = "0";
+            } else {
+              this.detailNight = this.empDetail.night;
+            }
 
-        if (!this.empDetail.work) {
-          this.detailWork = "0";
-        } else {
-          this.detailWork = this.empDetail.work;
-        }
+            if (!this.empDetail.deduct) {
+              this.detailDeduct = "0";
+            } else {
+              this.detailDeduct =
+                Number(this.detailBreak) + Number(this.detailOuting);
+            }
 
-        if (!this.empDetail.over.accept) {
-          this.detailOverAccept = "0";
-        } else {
-          this.detailOverAccept = this.empDetail.over.accept;
-        }
+            if (!this.empDetail.work) {
+              this.detailWork = "0";
+            } else {
+              this.detailWork =
+                Number(this.detailTotal) - Number(this.detailDeduct);
+            }
 
-        if (!this.empDetail.over.max) {
-          this.detailOverMax = "0";
-        } else {
-          this.detailOverMax = this.empDetail.over.max;
-        }
+            if (!this.empDetail.over.accept) {
+              this.detailOverAccept = "0";
+            } else {
+              this.detailOverAccept = this.empDetail.over.accept;
+            }
 
-        if (!this.empDetail.over.deduct) {
-          this.detailOverDeduct = "0";
-        } else {
-          this.detailOverDeduct = this.empDetail.over.deduct;
-        }
+            if (!this.empDetail.over.max) {
+              this.detailOverMax = "0";
+            } else {
+              this.detailOverMax = this.empDetail.over.max;
+            }
 
-        if (!this.empDetail.over.time) {
-          this.detailOverTime = "0";
-        } else {
-          this.detailOverTime = this.empDetail.over.time;
-        }
-        resolve();
+            if (!this.empDetail.over.deduct) {
+              this.detailOverDeduct = "0";
+            } else {
+              this.detailOverDeduct = this.empDetail.over.deduct;
+            }
+
+            if (!this.empDetail.over.time) {
+              this.detailOverTime = "0";
+            } else {
+              this.detailOverTime = this.empDetail.over.time;
+            }
+          }
+
+          resolve();
+        }, 20);
       });
     },
 
