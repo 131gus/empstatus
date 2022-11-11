@@ -6,10 +6,10 @@
 
 <script>
 // @ is an alias to /src
-import EmpStatus from "@/components/EmpStatus.vue";
+import EmpStatus from "../components/EmpStatus.vue";
 
 export default {
-  name: "HomeView",
+  name: "EmpsView",
   components: {
     EmpStatus,
   },

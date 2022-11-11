@@ -1,5 +1,10 @@
 import axios from "axios";
 
+const instance = axios.create({
+  baseURL: "https://gw.valti.co.kr/comm_test/func/p_data.php",
+  // baseURL: "../func/p_data.php",
+});
+
 // initial state
 const empStatus = {
   namespaced: true,
@@ -7,6 +12,7 @@ const empStatus = {
     empsData: [],
     empDetailData: {},
     timeCalc: {},
+    base_url: window.location.href,
   },
   getters: {},
   mutations: {
@@ -22,51 +28,107 @@ const empStatus = {
   },
   actions: {
     // 전체 사원 출퇴근 정보
-    async fetchEmpsData(context, date) {
-      await axios
-        .get(
-          `https://gw.valti.co.kr/comm_test/func/p_data.php?mode=current2&date=${date}`
-        )
-        .then((res) => {
-          context.commit("setEmpsData", res.data);
-        })
-        .catch((err) => {
-          console.log(err);
-        });
+    fetchEmpsData({ commit }, date) {
+      return new Promise((resolve, reject) => {
+        instance
+          .get(`?mode=current3&date=${date}`)
+          .then((res) => {
+            commit("setEmpsData", res.data);
+            resolve(res.data);
+          })
+          .catch((err) => {
+            console.log(err);
+            reject(err);
+          });
+      });
     },
     // 사원 상세정보
-    fetchEmpDetailData(context, { empn, date }) {
+    fetchEmpDetailData({ commit }, { empn, date }) {
       return new Promise((resolve, reject) => {
-        setTimeout(() => {
-          axios
-            .post(
-              `https://gw.valti.co.kr/comm_test/func/p_data.php?mode=daily_hour&empn=${empn}&&date=${date}`
-            )
-            .then((res) => {
-              context.commit("setEmpDetailData", res.data);
-              resolve();
-            })
-            .catch((err) => {
-              console.log(err);
-              reject();
-            });
-        }, 100);
+        instance
+          .get(`?mode=daily_hour&empn=${empn}&date=${date}`)
+          .then((res) => {
+            commit("setEmpDetailData", res.data);
+            resolve(res.data);
+          })
+          .catch((err) => {
+            console.log(err);
+            reject(err);
+          });
       });
     },
     // 사원 상세정보 시간 변경 계산
-    async fetchTimeCalc({ commit }, { empn, date, timein, timeout, outing }) {
-      let form = new FormData();
-      form.append("mode", "calc_only");
-      form.append("date", date);
-      form.append("timein", timein);
-      form.append("timeout", timeout);
-      form.append("outing", outing);
-      let res = await axios.post(
-        `https://gw.valti.co.kr/comm_test/func/p_data.php?mode=calc_only&empn=${empn}&date=${date}&timein=${timein}&timeout=${timeout}&outing=${outing}`,
-        form
-      );
-      commit("setTimeCalc", res.data);
-      console.log(res.data);
+    fetchTimeCalc({ commit }, { empn, date, timein, timeout, outing }) {
+      return new Promise((resolve, reject) => {
+        let form = new FormData();
+        form.append("mode", "calc_only");
+        form.append("empn", empn);
+        form.append("date", date);
+        form.append("timein", timein);
+        form.append("timeout", timeout);
+        form.append("outing", outing);
+        instance
+          .post(``, form)
+          .then((res) => {
+            commit("setTimeCalc", res.data);
+            resolve(res.data);
+          })
+          .catch((err) => {
+            console.log(err);
+            reject(err);
+          });
+      });
+    },
+
+    fetchEmpFormData(
+      // eslint-disable-next-line no-unused-vars
+      { commit },
+      {
+        empn,
+        date,
+        incomming,
+        outgoing,
+        total,
+        schedule,
+        break_time,
+        outing,
+        over_accept,
+        overtime,
+        night,
+        deduct,
+        work,
+        comment,
+        err,
+      }
+    ) {
+      return new Promise((resolve, reject) => {
+        let form = new FormData();
+        form.append("mode", "obj_update");
+        form.append("empn", empn);
+        form.append("date", date);
+        form.append("incomming", incomming);
+        form.append("outgoing", outgoing);
+        form.append("total", total);
+        form.append("schedule", schedule);
+        form.append("break", break_time);
+        form.append("outing", outing);
+        form.append("over_accept", over_accept);
+        form.append("overtime", overtime);
+        form.append("night", night);
+        form.append("deduct", deduct);
+        form.append("work", work);
+        form.append("comment", comment);
+        form.append("err", err);
+        instance
+          .post(``, form)
+          .then((res) => {
+            resolve(res.data);
+          })
+          .catch((err) => {
+            console.log(err);
+            reject(err);
+          });
+      });
     },
   },
 };

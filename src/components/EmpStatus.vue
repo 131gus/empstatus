@@ -1,5 +1,5 @@
 <template>
-  <v-container class="mt-10" style="max-width: 1000px">
+  <v-container class="mt-10 pb-0" style="max-width: 1000px">
     <v-layout justify-center>
       <v-card-actions>
         <v-btn class="mb-3" @click="prevDate">
@@ -9,6 +9,9 @@
 
         <v-btn class="mb-3" color="#4aadd6">
           <input type="date" v-model="inputDate" />
+          <span style="font-weight: bold; padding-bottom: 2px"
+            >({{ dayOfWeek }})
+          </span>
         </v-btn>
 
         <v-btn class="mb-3" @click="nextDate">
@@ -31,264 +34,12 @@
       </v-chip>
     </v-layout>
 
-    <!-- 테이블 행 유저 상세 정보 -->
-    <v-dialog v-model="dialogDetail" width="450">
-      <v-card>
-        <v-card-title>
-          <span class="text-h5 ml-2">상세 정보</span>
-        </v-card-title>
-        <v-card-text>
-          <v-container>
-            <v-row no-gutters>
-              <v-col cols="4" class="mb-2">
-                <v-card class="pa-2" color="grey lighten-3" outlined>
-                  <span>소속</span>
-                </v-card>
-              </v-col>
-              <v-col cols="8" class="mb-2">
-                <v-card class="pa-2" color="grey lighten-4" outlined>
-                  <span>{{ this.detailTeam }}</span>
-                </v-card>
-              </v-col>
-            </v-row>
-
-            <v-row no-gutters>
-              <v-col cols="4" class="mb-2">
-                <v-card class="pa-2" color="grey lighten-3" outlined>
-                  <span>이름</span>
-                </v-card>
-              </v-col>
-              <v-col cols="8">
-                <v-card class="pa-2" color="grey lighten-4" outlined>
-                  <span>{{ this.detailName }}</span>
-                </v-card>
-              </v-col>
-            </v-row>
-
-            <v-row no-gutters>
-              <v-col cols="4" class="mb-2">
-                <v-card class="pa-2" color="grey lighten-3" outlined>
-                  <span>출근시간</span>
-                </v-card>
-              </v-col>
-              <v-col cols="8" class="mb-2">
-                <v-card class="pl-2 pr-2" outlined>
-                  <input
-                    v-model="detailInCom"
-                    type="datetime-local"
-                    style="width: 100%; height: 39px; outline: none"
-                  />
-                </v-card>
-              </v-col>
-            </v-row>
-
-            <v-row no-gutters>
-              <v-col cols="4" class="mb-2">
-                <v-card class="pa-2" color="grey lighten-3" outlined>
-                  <span>퇴근시간</span>
-                </v-card>
-              </v-col>
-              <v-col cols="89" class="mb-2">
-                <v-card class="pl-2 pr-2" outlined>
-                  <input
-                    v-model="detailOutGo"
-                    type="datetime-local"
-                    style="width: 100%; height: 39px; outline: none"
-                  />
-                </v-card>
-              </v-col>
-            </v-row>
-
-            <v-row no-gutters>
-              <v-col cols="4" class="mb-2">
-                <v-card class="pa-2" color="grey lighten-3" outlined>
-                  <span>총시간</span>
-                </v-card>
-              </v-col>
-              <v-col cols="8">
-                <v-card class="pa-2" color="grey lighten-4" outlined>
-                  <input v-model="detailTotal" type="number" disabled />
-                </v-card>
-              </v-col>
-            </v-row>
-
-            <v-row no-gutters>
-              <v-col cols="4" class="mb-2">
-                <v-card class="pa-2" color="grey lighten-3" outlined>
-                  <span>소정근로시간</span>
-                </v-card>
-              </v-col>
-              <v-col cols="8">
-                <v-card class="pa-2" color="grey lighten-4" outlined>
-                  <input v-model="detailSchedule" type="number" disabled />
-                </v-card>
-              </v-col>
-            </v-row>
-
-            <v-row no-gutters>
-              <v-col cols="4" class="mb-2">
-                <v-card class="pa-2" color="grey lighten-3" outlined>
-                  <span>휴게시간</span>
-                </v-card>
-              </v-col>
-              <v-col cols="8">
-                <v-card class="pl-2 pr-2" outlined>
-                  <input
-                    v-model="detailBreak"
-                    type="number"
-                    step="0.25"
-                    style="width: 100%; height: 39px; outline: none"
-                  />
-                </v-card>
-              </v-col>
-            </v-row>
-
-            <v-row no-gutters>
-              <v-col cols="4" class="mb-2">
-                <v-card class="pa-2" color="grey lighten-3" outlined>
-                  <span>외출시간</span>
-                </v-card>
-              </v-col>
-              <v-col cols="8">
-                <v-card class="pl-2 pr-2" outlined>
-                  <input
-                    v-model="detailOuting"
-                    type="number"
-                    step="0.25"
-                    style="width: 100%; height: 39px; outline: none"
-                  />
-                </v-card>
-              </v-col>
-            </v-row>
-
-            <v-row no-gutters>
-              <v-col cols="4" class="mb-2">
-                <v-card class="pa-2" color="grey lighten-3" outlined>
-                  <span>특근승인시간</span>
-                </v-card>
-              </v-col>
-              <v-col cols="8">
-                <v-card class="pa-2" color="grey lighten-4" outlined>
-                  <input v-model="detailOverAccept" type="number" disabled />
-                </v-card>
-              </v-col>
-            </v-row>
-
-            <v-row no-gutters>
-              <v-col cols="4" class="mb-2">
-                <v-card class="pa-2" color="grey lighten-3" outlined>
-                  <span>특근인정시간</span>
-                </v-card>
-              </v-col>
-              <v-col cols="8">
-                <v-card class="pl-2 pr-2" outlined>
-                  <input
-                    v-model="detailOverTime"
-                    type="number"
-                    step="0.25"
-                    style="width: 100%; height: 39px; outline: none"
-                  />
-                </v-card>
-              </v-col>
-            </v-row>
-
-            <v-row no-gutters>
-              <v-col cols="4" class="mb-2">
-                <v-card class="pa-2" color="grey lighten-3" outlined>
-                  <span>야간근로</span>
-                </v-card>
-              </v-col>
-              <v-col cols="8">
-                <v-card class="pl-2 pr-2" outlined>
-                  <input
-                    v-model="detailNight"
-                    type="number"
-                    step="0.25"
-                    style="width: 100%; height: 39px; outline: none"
-                  />
-                </v-card>
-              </v-col>
-            </v-row>
-
-            <v-row no-gutters>
-              <v-col cols="4" class="mb-2">
-                <v-card class="pa-2" color="grey lighten-3" outlined>
-                  <span>차감시간</span>
-                </v-card>
-              </v-col>
-              <v-col cols="8">
-                <v-card class="pa-2" color="grey lighten-4" outlined>
-                  <input v-model="detailDeduct" type="number" disabled />
-                </v-card>
-              </v-col>
-            </v-row>
-
-            <v-row no-gutters>
-              <v-col cols="4" class="mb-2">
-                <v-card class="pa-2" color="grey lighten-3" outlined>
-                  <span>근로시간</span>
-                </v-card>
-              </v-col>
-              <v-col cols="8">
-                <v-card class="pa-2" color="grey lighten-4" outlined>
-                  <input v-model="detailWork" type="number" disabled />
-                </v-card>
-              </v-col>
-            </v-row>
-
-            <v-row no-gutters>
-              <v-col cols="4" class="mb-2">
-                <v-card class="pa-2" color="grey lighten-3" outlined>
-                  <span>의견</span>
-                </v-card>
-              </v-col>
-              <v-col cols="8">
-                <v-card class="pl-2 pr-2" outlined>
-                  <input
-                    v-model="detailOpinion"
-                    type="text"
-                    placeholder="의견 작성"
-                    style="width: 100%; height: 39px; outline: none"
-                  />
-                </v-card>
-              </v-col>
-            </v-row>
-          </v-container>
-          <v-card-actions>
-            <v-row>
-              <v-col cols="6">
-                <v-btn
-                  outlined
-                  color="primary"
-                  style="width: 100%"
-                  @click="dialogDetail = false"
-                >
-                  수정
-                </v-btn>
-              </v-col>
-              <v-col cols="6">
-                <v-btn
-                  outlined
-                  style="width: 100%"
-                  @click="dialogDetail = false"
-                >
-                  닫기
-                </v-btn>
-              </v-col>
-            </v-row>
-          </v-card-actions>
-        </v-card-text>
-      </v-card>
-    </v-dialog>
-
     <v-layout justify-center>
       <v-data-table
         dense
         :headers="headersEmp"
-        :items="this.$store.state.empStatus.empsData"
-        :options.sync="options"
+        :items="this.emps"
         :server-items-length="totalEmps"
-        :items-per-page="30"
         group-by="team"
         hide-default-footer
         class="elevation-1 mb-3"
@@ -364,6 +115,284 @@
         </v-btn>
       </v-card-actions>
     </v-layout>
+
+    <!-- 테이블 행 유저 상세 정보 모달(dialog)-->
+    <v-dialog v-model="dialogDetail" width="450">
+      <v-card>
+        <v-card-title>
+          <span
+            v-if="detailErr == 1"
+            class="text-h5 mt-2 ml-2"
+            style="color: red"
+            >상세 정보 (출퇴근 기록 없음)</span
+          >
+          <span
+            v-else-if="detailErr == 2"
+            class="text-h5 mt-2 ml-2"
+            style="color: red"
+            >상세 정보 (퇴근 기록 없음)</span
+          >
+          <span v-else class="text-h5 mt-2 ml-2">상세 정보</span>
+        </v-card-title>
+        <v-card-text>
+          <v-container>
+            <v-row no-gutters>
+              <v-col cols="4" class="mb-2">
+                <v-card class="pa-2" color="grey lighten-3" outlined>
+                  <span>소속</span>
+                </v-card>
+              </v-col>
+              <v-col cols="8" class="mb-2">
+                <v-card class="pa-2" color="grey lighten-4" outlined>
+                  <span>{{ this.detailTeam }}</span>
+                </v-card>
+              </v-col>
+            </v-row>
+
+            <v-row no-gutters>
+              <v-col cols="4" class="mb-2">
+                <v-card class="pa-2" color="grey lighten-3" outlined>
+                  <span>이름</span>
+                </v-card>
+              </v-col>
+              <v-col cols="8">
+                <v-card class="pa-2" color="grey lighten-4" outlined>
+                  <span>{{ this.detailName }}</span>
+                </v-card>
+              </v-col>
+            </v-row>
+
+            <v-row no-gutters>
+              <v-col cols="4" class="mb-2">
+                <v-card class="pa-2" color="grey lighten-3" outlined>
+                  <span>출근시간</span>
+                </v-card>
+              </v-col>
+              <v-col cols="8" class="mb-2">
+                <v-card
+                  class="pl-2 pr-2"
+                  :class="{ cardOutline: cssInCom }"
+                  outlined
+                >
+                  <input
+                    v-model="detailInCom"
+                    type="datetime-local"
+                    @change="changeInCom"
+                    style="width: 100%; height: 39px; outline: none"
+                  />
+                </v-card>
+              </v-col>
+            </v-row>
+
+            <v-row no-gutters>
+              <v-col cols="4" class="mb-2">
+                <v-card class="pa-2" color="grey lighten-3" outlined>
+                  <span>퇴근시간</span>
+                </v-card>
+              </v-col>
+              <v-col cols="89" class="mb-2">
+                <v-card
+                  class="pl-2 pr-2"
+                  :class="{ cardOutline: cssOutGo }"
+                  outlined
+                >
+                  <input
+                    v-model="detailOutGo"
+                    type="datetime-local"
+                    @change="changeOutGo"
+                    style="width: 100%; height: 39px; outline: none"
+                  />
+                </v-card>
+              </v-col>
+            </v-row>
+
+            <v-row no-gutters>
+              <v-col cols="4" class="mb-2">
+                <v-card class="pa-2" color="grey lighten-3" outlined>
+                  <span>총시간</span>
+                </v-card>
+              </v-col>
+              <v-col cols="8">
+                <v-card class="pa-2" color="grey lighten-4" outlined>
+                  <input v-model="detailTotal" type="number" disabled />
+                </v-card>
+              </v-col>
+            </v-row>
+
+            <v-row no-gutters>
+              <v-col cols="4" class="mb-2">
+                <v-card class="pa-2" color="grey lighten-3" outlined>
+                  <span>소정근로시간</span>
+                </v-card>
+              </v-col>
+              <v-col cols="8">
+                <v-card class="pa-2" color="grey lighten-4" outlined>
+                  <input v-model="detailSchedule" type="number" disabled />
+                </v-card>
+              </v-col>
+            </v-row>
+
+            <v-row no-gutters>
+              <v-col cols="4" class="mb-2">
+                <v-card class="pa-2" color="grey lighten-3" outlined>
+                  <span>휴게시간</span>
+                </v-card>
+              </v-col>
+              <v-col cols="8">
+                <v-card class="pl-2 pr-2" outlined>
+                  <input
+                    v-model="detailBreak"
+                    type="number"
+                    step="0.1"
+                    min="0"
+                    :max="detailMaxBreak"
+                    style="width: 100%; height: 39px; outline: none"
+                  />
+                </v-card>
+              </v-col>
+            </v-row>
+
+            <v-row no-gutters>
+              <v-col cols="4" class="mb-2">
+                <v-card class="pa-2" color="grey lighten-3" outlined>
+                  <span>외출시간</span>
+                </v-card>
+              </v-col>
+              <v-col cols="8">
+                <v-card class="pl-2 pr-2" outlined>
+                  <input
+                    v-model="detailOuting"
+                    type="number"
+                    step="0.1"
+                    min="0"
+                    :max="detailMaxOuting"
+                    style="width: 100%; height: 39px; outline: none"
+                  />
+                </v-card>
+              </v-col>
+            </v-row>
+
+            <v-row no-gutters>
+              <v-col cols="4" class="mb-2">
+                <v-card class="pa-2" color="grey lighten-3" outlined>
+                  <span>특근승인시간</span>
+                </v-card>
+              </v-col>
+              <v-col cols="8">
+                <v-card class="pa-2" color="grey lighten-4" outlined>
+                  <input v-model="detailOverAccept" type="number" disabled />
+                </v-card>
+              </v-col>
+            </v-row>
+
+            <v-row no-gutters>
+              <v-col cols="4" class="mb-2">
+                <v-card class="pa-2" color="grey lighten-3" outlined>
+                  <span>특근인정시간</span>
+                </v-card>
+              </v-col>
+              <v-col cols="8">
+                <v-card class="pl-2 pr-2" outlined>
+                  <input
+                    v-model="detailOverTime"
+                    type="number"
+                    step="0.1"
+                    min="0"
+                    :max="detailTmp"
+                    style="width: 100%; height: 39px; outline: none"
+                  />
+                </v-card>
+              </v-col>
+            </v-row>
+
+            <v-row no-gutters>
+              <v-col cols="4" class="mb-2">
+                <v-card class="pa-2" color="grey lighten-3" outlined>
+                  <span>야간근로</span>
+                </v-card>
+              </v-col>
+              <v-col cols="8">
+                <v-card class="pa-2" color="grey lighten-4" outlined>
+                  <input v-model="detailNight" type="number" disabled />
+                </v-card>
+              </v-col>
+            </v-row>
+
+            <v-row no-gutters>
+              <v-col cols="4" class="mb-2">
+                <v-card class="pa-2" color="grey lighten-3" outlined>
+                  <span>차감시간</span>
+                </v-card>
+              </v-col>
+              <v-col cols="8">
+                <v-card class="pa-2" color="grey lighten-4" outlined>
+                  <input v-model="detailDeduct" type="number" disabled />
+                </v-card>
+              </v-col>
+            </v-row>
+
+            <v-row no-gutters>
+              <v-col cols="4" class="mb-2">
+                <v-card class="pa-2" color="grey lighten-3" outlined>
+                  <span>근로시간</span>
+                </v-card>
+              </v-col>
+              <v-col cols="8">
+                <v-card class="pa-2" color="grey lighten-4" outlined>
+                  <input v-model="detailWork" type="number" disabled />
+                </v-card>
+              </v-col>
+            </v-row>
+
+            <v-row no-gutters>
+              <v-col cols="12" class="mb-0">
+                <v-textarea
+                  v-model="detailComment"
+                  outlined
+                  auto-grow
+                  hide-details
+                  rows="2"
+                  row-height="35"
+                  placeholder="의견 작성"
+                ></v-textarea>
+              </v-col>
+            </v-row>
+
+            <v-row no-gutters>
+              <v-col cols="12" class="mt-2 mb-0">
+                <span v-if="detailModTime"
+                  >수정시간 : {{ detailModTime }}
+                </span>
+                <span v-if="detailModer"> / 관리자 : {{ detailModer }}</span>
+              </v-col>
+            </v-row>
+          </v-container>
+          <v-card-actions>
+            <v-row>
+              <v-col cols="6">
+                <v-btn
+                  outlined
+                  color="primary"
+                  style="width: 100%"
+                  @click="empDetailForm"
+                >
+                  수정
+                </v-btn>
+              </v-col>
+              <v-col cols="6">
+                <v-btn
+                  outlined
+                  style="width: 100%"
+                  @click="dialogDetail = false"
+                >
+                  닫기
+                </v-btn>
+              </v-col>
+            </v-row>
+          </v-card-actions>
+        </v-card-text>
+      </v-card>
+    </v-dialog>
   </v-container>
 </template>
 
@@ -373,6 +402,11 @@ import moment from "moment";
 export default {
   data() {
     return {
+      cssInCom: false,
+      cssOutGo: false,
+      week: ["일", "월", "화", "수", "목", "금", "토"],
+      dayOfWeek: "",
+      empRank: "", // 관리자 등급
       detailName: "", //이름
       detailTeam: "", //소속
       detailInCom: "", //출근시간
@@ -390,15 +424,22 @@ export default {
       detailOverMax: "", //특근 초과시간
       detailOverDeduct: "", //특근 차감시간
       detailOverTime: "", //특근 인정시간
-      detailOpinion: "", // 의견
+      detailComment: "", // 의견
+      detailErr: "", // 에러코드
+      detailTmp: "", // 특근 최대시간
+      detailMaxBreak: "", // 휴게시간 max
+      detailMaxOuting: "", // 외출시간 max
+      detailModTime: "",
+      detailModer: "",
 
-      dialogDetail: false,
-      options: {},
-      totalEmps: 0,
-      emps: [],
-      empDetail: [],
-      timeDataCalc: {},
-      empNo: "",
+      dialogDetail: false, // 모달 오픈 여부
+      empNo: "", // 사원번호
+      totalEmps: 0, // 사원데이터 total
+      emps: [], // 테이블 행 데이터
+      empDetail: [], // 모달 오픈 상세정보 데이터
+      timeDataCalc: {}, // 출퇴근 시간으로 계산 데이터
+
+      // 테이블 헤더
       headersEmp: [
         {
           text: "소속",
@@ -410,6 +451,8 @@ export default {
         { text: "출근시각", value: "in", sortable: false, width: "35%" },
         { text: "퇴근시각", value: "out", sortable: false, width: "35%" },
       ],
+
+      // 입력, 현재, 다음 이전 날짜
       inputDate: moment().format("YYYY-MM-DD"),
       todayDate: moment().format("YYYY-MM-DD"),
       afterDate: moment(this.inputDate).add(1, "day").format("YYYY-MM-DD"),
@@ -419,12 +462,7 @@ export default {
     };
   },
   watch: {
-    options: {
-      handler() {
-        this.getDataFromApi();
-      },
-      deep: true,
-    },
+    // 입력날짜 변경시 이전 다음 날짜 변경 후 emps 데이터 통신
     inputDate(newVal, oldVal) {
       if (oldVal != newVal) {
         this.inputDate = newVal;
@@ -434,304 +472,339 @@ export default {
         this.afterDate = moment(this.inputDate)
           .add(1, "day")
           .format("YYYY-MM-DD");
-        this.getData(this.inputDate);
+        this.getDataFromApi(this.inputDate);
+
+        this.dayOfWeek = this.week[new Date(this.inputDate).getDay()];
       }
     },
-    // detailInCom() {
-    //   this.newTimeCalc().then(() => this.newTimeCalc2());
-    // },
-    // detailOutGo() {
-    //   this.newTimeCalc().then(() => this.newTimeCalc2());
-    // },
-    // detailBreak() {
-    //   this.newTimeCalc().then(() => this.newTimeCalc2());
-    // },
-    // detailOuting() {
-    //   this.newTimeCalc().then(() => this.newTimeCalc2());
-    // },
-    // detailNight() {
-    //   this.newTimeCalc().then(() => this.newTimeCalc2());
-    // },
-    // detailOverAccept() {
-    //   this.newTimeCalc().then(() => this.newTimeCalc2());
-    // },
+    // 휴게, 외출, 야간, 특근인정 변경
+    detailBreak() {
+      this.changeTimeData();
+    },
+    detailOuting() {
+      this.changeTimeData();
+    },
+    detailNight() {
+      this.changeTimeData();
+    },
+    detailOverTime() {
+      this.changeTimeData();
+    },
+  },
+  // 페이시 시작시 테이블 데이터 통신
+  mounted() {
+    this.getDataFromApi(this.inputDate);
+    this.dayOfWeek = this.week[new Date(this.inputDate).getDay()];
   },
   methods: {
-    newTimeCalc() {
-      return new Promise((resolve) => {
-        setTimeout(() => {
-          this.$store.commit(`empStatus/fetchTimeCalc`, {
-            empn: this.empNo,
-            date: this.inputDate,
-            timein: this.detailInCom,
-            timeout: this.detailOutGo,
-            outing: this.detailOuting,
-          });
-        }, 30);
-        resolve();
-      });
+    empDetailForm() {
+      this.$store
+        .dispatch(`empStatus/fetchEmpFormData`, {
+          empn: this.empNo,
+          date: this.inputDate,
+          incomming: this.detailInCom,
+          outgoing: this.detailOutGo,
+          total: this.detailTotal,
+          schedule: this.detailSchedule,
+          break_time: this.detailBreak,
+          outing: this.detailOuting,
+          over_accept: this.detailOverAccept,
+          overtime: this.detailOverTime,
+          night: this.detailNight,
+          deduct: this.detailDeduct,
+          work: this.detailWork,
+          comment: this.detailComment,
+          err: this.detailErr,
+        })
+        .then((res) => {
+          if (res.err == 0) {
+            alert("수정 완료되었습니다.");
+            this.getDataFromApi(this.inputDate);
+          } else if (res.err > 0) {
+            alert("수정 실패하였습니다.");
+          }
+          this.dialogDetail = false;
+        });
+    },
+    // 출퇴근 시간 변경하면 데이터 통신
+    changeInCom() {
+      this.newTimeCalc();
+    },
+    changeOutGo() {
+      this.newTimeCalc();
     },
 
-    newTimeCalc2() {
-      return new Promise((resolve) => {
-        setTimeout(() => {
+    // 출퇴근 시간 변경 시 통신 후 데이터 입력
+    newTimeCalc() {
+      this.$store
+        .dispatch(`empStatus/fetchTimeCalc`, {
+          empn: this.empNo,
+          date: this.inputDate,
+          timein: this.detailInCom,
+          timeout: this.detailOutGo,
+          outing: this.detailOuting,
+        })
+        .then(() => {
           this.timeDataCalc = this.$store.state.empStatus.timeCalc;
+        })
+        .then(() => {
           this.detailTotal = this.timeDataCalc.total;
-          this.detailDeduct =
-            Number(this.detailBreak) + Number(this.detailOuting);
-          this.detailWork =
-            Number(this.detailTotal) - Number(this.detailDeduct);
           this.detailSchedule = this.timeDataCalc.schedule;
-        }, 30);
-        resolve();
-      });
+          this.detailBreak = this.timeDataCalc.break;
+          this.detailNight = this.timeDataCalc.night;
+
+          this.deductWorkTimeCalc();
+        });
+    },
+
+    // 초과 근무 시간에 따른 휴게 외출 시간 맥스 값 설정
+    changeTimeData() {
+      this.detailMaxBreak =
+        Number(this.detailTotal) -
+        (Number(this.detailOuting) + Number(this.detailOverTime));
+      this.detailMaxOuting =
+        Number(this.detailTotal) -
+        (Number(this.detailBreak) + Number(this.detailOverTime));
+
+      this.detailTmp =
+        Math.round(
+          (Number(this.detailTotal) -
+            (Number(this.detailBreak) +
+              Number(this.detailSchedule) +
+              Number(this.detailOuting))) *
+            100
+        ) / 100;
+
+      // 휴게 외출 시간에 따라 특근인정 시간 변동
+      if (this.detailTmp >= 0 && this.detailTmp <= this.detailOverTime) {
+        this.detailOverTime = this.detailTmp;
+      }
+
+      // 차감 시간 계산
+      if (this.detailTmp >= this.detailOverTime) {
+        this.detailDeduct =
+          Math.round(
+            (Number(this.detailBreak) +
+              Number(this.detailOuting) +
+              (Number(this.detailTmp) - Number(this.detailOverTime))) *
+              100
+          ) / 100;
+      } else {
+        this.detailDeduct =
+          Math.round(
+            (Number(this.detailBreak) + Number(this.detailOuting)) * 100
+          ) / 100;
+      }
+      this.detailWork =
+        Math.round(
+          (Number(this.detailTotal) - Number(this.detailDeduct)) * 100
+        ) / 100;
+    },
+
+    // 차감, 근로 시간 계산식
+    deductWorkTimeCalc() {
+      this.detailDeduct =
+        Math.round(
+          (Number(this.detailBreak) + Number(this.detailOuting)) * 100
+        ) / 100;
+      this.detailWork =
+        Math.round(
+          (Number(this.detailTotal) - Number(this.detailDeduct)) * 100
+        ) / 100;
     },
 
     // 사원 상세 정보 받아오고 입력 후 모달 오픈
     detailView(event, { item }) {
+      if (this.empRank === 1) {
+        console.log("관리자등급만 모달 오픈 가능");
+      }
       // row 사원 정보 받아오기
       this.empInfo = Object.assign({}, item);
 
-      this.detailViewDataAxios()
-        .then(() => this.detailViewDataInput())
-        .then(() => this.dialogDetailOpen());
+      this.detailViewDataAxios();
+      this.detailComment = "";
     },
 
-    // 모달 오픈
-    dialogDetailOpen() {
-      return new Promise((resolve) => {
-        setTimeout(() => {
-          this.dialogDetail = true;
-          resolve();
-        }, 10);
-      });
+    // 사원 상세정보 통신 후 데이터 입력
+    detailViewDataInput() {
+      this.detailTotal = this.timeDataCalc.total;
+      this.detailSchedule = this.timeDataCalc.schedule;
+      this.detailBreak = this.timeDataCalc.break;
+      this.detailOuting = this.timeDataCalc.outing;
+      this.detailOverAccept = this.timeDataCalc.over.accept;
+      this.detailOverTime = this.timeDataCalc.over.time;
+      this.detailNight = this.timeDataCalc.night;
     },
 
-    // 사원 상세정보 데이터 통신
+    // 사원 상세정보 통신
     detailViewDataAxios() {
-      return new Promise((resolve) => {
-        setTimeout(() => {
-          this.$store.dispatch(`empStatus/fetchEmpDetailData`, {
-            empn: this.empInfo.empn,
-            date: this.inputDate,
-          });
-
+      this.$store
+        .dispatch(`empStatus/fetchEmpDetailData`, {
+          empn: this.empInfo.empn,
+          date: this.inputDate,
+        })
+        .then(() => {
+          this.empDetail = this.$store.state.empStatus.empDetailData;
           // 사원번호, 조직, 이름 입력
           this.empNo = this.empInfo.empn;
           this.detailTeam = this.empInfo.team;
           this.detailName = this.empInfo.name;
-
-          resolve();
-        }, 20);
-      });
-    },
-
-    // 사원 상세정보 입력
-    detailViewDataInput() {
-      return new Promise((resolve) => {
-        setTimeout(() => {
-          this.empDetail = this.$store.state.empStatus.empDetailData;
-
-          // 출퇴근 시간 입력
-          if (this.empDetail.err == 1) {
+          this.detailErr = this.empDetail.err;
+          this.detailInCom = this.empDetail.incomming;
+          this.detailOutGo = this.empDetail.outgoing;
+          this.detailComment = this.empDetail.comment;
+          this.detailModTime = this.empDetail.mod_time;
+          this.detailModer = this.empDetail.moder;
+        })
+        .then(() => {
+          // 출퇴근 정보 없음
+          if (this.detailErr == 1) {
+            this.cssInCom = true;
+            this.cssOutGo = true;
             this.detailInCom = this.inputDate + " 09:00:00";
             this.detailOutGo = this.inputDate + " 18:00:00";
-            this.detailTotal = "0";
-            this.detailSchedule = "0";
-            this.detailBreak = "0";
-            this.detailOuting = "0";
-            this.detailNight = "0";
-            this.detailDeduct = "0";
-            this.detailWork = "0";
-            this.detailOverAccept = "0";
-            this.detailOverMax = "0";
-            this.detailOverDeduct = "0";
-            this.detailOverTime = "0";
+            this.$store
+              .dispatch(`empStatus/fetchTimeCalc`, {
+                empn: this.empNo,
+                date: this.inputDate,
+                timein: this.detailInCom,
+                timeout: this.detailOutGo,
+                outing: 0,
+              })
+              .then(() => {
+                this.timeDataCalc = this.$store.state.empStatus.timeCalc;
+              })
+              .then(() => {
+                this.detailViewDataInput();
+                this.deductWorkTimeCalc();
+              });
+          } else if (this.detailErr == 2) {
+            // 퇴근 정보 없음
+            this.cssInCom = false;
+            this.cssOutGo = true;
+            this.detailOutGo = this.inputDate + " 18:00:00";
+            this.$store
+              .dispatch(`empStatus/fetchTimeCalc`, {
+                empn: this.empNo,
+                date: this.inputDate,
+                timein: this.detailInCom,
+                timeout: this.detailOutGo,
+                outing: 0,
+              })
+              .then(() => {
+                this.timeDataCalc = this.$store.state.empStatus.timeCalc;
+              })
+              .then(() => {
+                this.detailViewDataInput();
+                this.deductWorkTimeCalc();
+              });
           } else {
-            if (!this.empDetail.incomming) {
-              this.detailInCom = "";
-            } else {
-              this.detailInCom = this.empDetail.incomming;
-            }
+            // 출퇴근 정보 있음
+            this.cssInCom = false;
+            this.cssOutGo = false;
+            this.detailInCom = this.empDetail.incomming;
+            this.detailOutGo = this.empDetail.outgoing;
+            this.detailTotal = this.empDetail.total;
+            this.detailSchedule = this.empDetail.schedule;
+            this.detailBreak = this.empDetail.break;
+            this.detailOuting = this.empDetail.outing;
+            this.detailNight = this.empDetail.night;
+            this.detailOverAccept = this.empDetail.over.accept;
+            this.detailOverMax = this.empDetail.over.max;
+            this.detailOverDeduct = this.empDetail.over.deduct;
+            this.detailOverTime = this.empDetail.over.time;
 
-            if (!this.empDetail.outgoing) {
-              this.detailOutGo = "";
-            } else {
-              this.detailOutGo = this.empDetail.outgoing;
-            }
-
-            if (!this.empDetail.total) {
-              this.detailTotal = "0";
-            } else {
-              this.detailTotal = this.empDetail.total;
-            }
-
-            if (!this.empDetail.schedule) {
-              this.detailSchedule = "0";
-            } else {
-              this.detailSchedule = this.empDetail.schedule;
-            }
-
-            if (!this.empDetail.break) {
-              this.detailBreak = "0";
-            } else {
-              this.detailBreak = this.empDetail.break;
-            }
-
-            if (!this.empDetail.outing) {
-              this.detailOuting = "0";
-            } else {
-              this.detailOuting = this.empDetail.outing;
-            }
-
-            if (!this.empDetail.night) {
-              this.detailNight = "0";
-            } else {
-              this.detailNight = this.empDetail.night;
-            }
-
-            if (!this.empDetail.deduct) {
-              this.detailDeduct = "0";
-            } else {
-              this.detailDeduct =
-                Number(this.detailBreak) + Number(this.detailOuting);
-            }
-
-            if (!this.empDetail.work) {
-              this.detailWork = "0";
-            } else {
-              this.detailWork =
-                Number(this.detailTotal) - Number(this.detailDeduct);
-            }
-
-            if (!this.empDetail.over.accept) {
-              this.detailOverAccept = "0";
-            } else {
-              this.detailOverAccept = this.empDetail.over.accept;
-            }
-
-            if (!this.empDetail.over.max) {
-              this.detailOverMax = "0";
-            } else {
-              this.detailOverMax = this.empDetail.over.max;
-            }
-
-            if (!this.empDetail.over.deduct) {
-              this.detailOverDeduct = "0";
-            } else {
-              this.detailOverDeduct = this.empDetail.over.deduct;
-            }
-
-            if (!this.empDetail.over.time) {
-              this.detailOverTime = "0";
-            } else {
-              this.detailOverTime = this.empDetail.over.time;
-            }
+            this.deductWorkTimeCalc();
           }
-
-          resolve();
-        }, 20);
-      });
+        })
+        .then(() => {
+          this.dialogDetail = true;
+        });
     },
 
-    getDataFromApi() {
-      this.fakeApiCall().then((data) => {
+    // fakeApiCall 이후 데이터 emps에 넣음
+    getDataFromApi(date) {
+      this.fakeApiCall(date).then((data) => {
         this.emps = data.items;
         this.totalEmps = data.total;
-
-        this.getData(this.inputDate);
       });
     },
-    /**
-     * In a real application this would be a call to fetch() or axios.get()
-     */
-    fakeApiCall() {
-      // eslint-disable-next-line no-unused-vars
+
+    // emps 데이터 통신
+    fakeApiCall(date) {
       return new Promise((resolve, reject) => {
-        const { sortBy, sortDesc, page, itemsPerPage } = this.options;
+        this.$store
+          .dispatch(`empStatus/fetchEmpsData`, date)
+          .then(() => {
+            let items = this.$store.state.empStatus.empsData;
+            const total = items.length;
 
-        let items = this.getEmps();
-        const total = items.length;
-
-        if (sortBy.length === 1 && sortDesc.length === 1) {
-          items = items.sort((a, b) => {
-            const sortA = a[sortBy[0]];
-            const sortB = b[sortBy[0]];
-
-            if (sortDesc[0]) {
-              if (sortA < sortB) return 1;
-              if (sortA > sortB) return -1;
-              return 0;
-            } else {
-              if (sortA < sortB) return -1;
-              if (sortA > sortB) return 1;
-              return 0;
-            }
+            resolve({
+              items,
+              total,
+            });
+          })
+          .catch((err) => {
+            console.log(err);
+            reject(err);
           });
-        }
-
-        if (itemsPerPage > 0) {
-          items = items.slice((page - 1) * itemsPerPage, page * itemsPerPage);
-        }
-
-        resolve({
-          items,
-          total,
-        });
       });
     },
-    getEmps() {
-      return [
-        {
-          empn: null,
-          name: null,
-          team: null,
-          outing_o: null,
-          outing_i: null,
-          in: null,
-          out: null,
-          in_c: null,
-          out_c: null,
-          outing: 0,
-        },
-      ];
-    },
+    //이전 날짜
     prevDate() {
       this.inputDate = this.beforeDate;
     },
+    //다음 날짜
     nextDate() {
       this.inputDate = this.afterDate;
     },
+    // 인원 총합계
     sumTotal() {
-      return this.$store.state.empStatus.empsData.length;
+      return this.emps.length;
     },
+    // 출근 인원
     sumIn() {
       var sum = 0;
-      for (let i = 0; i < this.$store.state.empStatus.empsData.length; i++) {
-        if (this.$store.state.empStatus.empsData[i].in) {
+      for (let i = 0; i < this.emps.length; i++) {
+        if (this.emps[i].in) {
           sum = sum + 1;
         }
       }
       return sum;
     },
+    // 출근 인원 중 퇴근 인원
     sumOut() {
       var sum = 0;
-      for (let i = 0; i < this.$store.state.empStatus.empsData.length; i++) {
-        if (this.$store.state.empStatus.empsData[i].out) {
+      for (let i = 0; i < this.emps.length; i++) {
+        if (this.emps[i].out) {
           sum = sum + 1;
         }
       }
       return sum;
-    },
-    getData(date) {
-      this.$store.dispatch(`empStatus/fetchEmpsData`, date);
-      this.emps = this.$store.state.empStatus.empsData;
     },
   },
 };
 </script>
+
 <style lang="css" scoped>
-.v-data-table-header th {
+/* 테이블 헤더 폰트크기 */
+.v-data-table::v-deep th {
   font-size: 14px !important;
+}
+
+/* 출퇴근 border 색상 변경 */
+.cardOutline {
+  border: 1px solid red;
+}
+
+input[type="date"] {
+  padding-left: 25px;
+  width: 105px;
+}
+
+input[type="date"]::-webkit-calendar-picker-indicator {
+  left: 5px;
+  position: absolute;
+  cursor: pointer;
 }
 </style>
