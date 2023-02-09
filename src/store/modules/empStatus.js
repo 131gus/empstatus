@@ -1,8 +1,7 @@
 import axios from "axios";
 
 const instance = axios.create({
-  baseURL: "https://gw.valti.co.kr/comm_test/func/p_data.php",
-  // baseURL: "../func/p_data.php",
+  baseURL: "../func/p_data.php",
 });
 
 // initial state
@@ -12,7 +11,7 @@ const empStatus = {
     empsData: [],
     empDetailData: {},
     timeCalc: {},
-    base_url: window.location.href,
+    empAuthData: {},
   },
   getters: {},
   mutations: {
@@ -25,6 +24,9 @@ const empStatus = {
     setTimeCalc(state, timeCalc) {
       state.timeCalc = timeCalc;
     },
+    setEmpAuthData(state, empAuthData) {
+      state.empAuthData = empAuthData;
+    },
   },
   actions: {
     // 전체 사원 출퇴근 정보
@@ -34,7 +36,7 @@ const empStatus = {
           .get(`?mode=current3&date=${date}`)
           .then((res) => {
             commit("setEmpsData", res.data);
-            resolve(res.data);
+            resolve();
           })
           .catch((err) => {
             console.log(err);
@@ -42,11 +44,34 @@ const empStatus = {
           });
       });
     },
+
+    // 로그인 정보 확인
+    fetchLoginEmpAuth({ commit }) {
+      return new Promise((resolve, reject) => {
+        let form = new FormData();
+        form.append("mode", "userdata");
+        instance
+          .post("", form)
+          .then((res) => {
+            commit("setEmpAuthData", res.data);
+            resolve();
+          })
+          .catch((err) => {
+            console.log(err);
+            reject();
+          });
+      });
+    },
+
     // 사원 상세정보
     fetchEmpDetailData({ commit }, { empn, date }) {
       return new Promise((resolve, reject) => {
+        let form = new FormData();
+        form.append("mode", "daily_hour");
+        form.append("empn", empn);
+        form.append("date", date);
         instance
-          .get(`?mode=daily_hour&empn=${empn}&date=${date}`)
+          .post("", form)
           .then((res) => {
             commit("setEmpDetailData", res.data);
             resolve(res.data);
@@ -68,7 +93,7 @@ const empStatus = {
         form.append("timeout", timeout);
         form.append("outing", outing);
         instance
-          .post(``, form)
+          .post("", form)
           .then((res) => {
             commit("setTimeCalc", res.data);
             resolve(res.data);
@@ -120,7 +145,7 @@ const empStatus = {
         form.append("comment", comment);
         form.append("err", err);
         instance
-          .post(``, form)
+          .post("", form)
           .then((res) => {
             resolve(res.data);
           })

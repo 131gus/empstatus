@@ -4,24 +4,24 @@
       <v-card-actions>
         <v-btn class="mb-3" @click="prevDate">
           <v-icon>mdi-arrow-left-bold</v-icon>
-          <span class="ml-2">{{ beforeDate }}</span>
+          <span v-if="!this.isMobile" class="ml-2">{{ beforeDate }}</span>
         </v-btn>
 
-        <v-btn class="mb-3" color="#4aadd6">
+        <v-btn class="mb-3" color="#4aadd6" style="cursor: default">
           <input type="date" v-model="inputDate" />
-          <span style="font-weight: bold; padding-bottom: 2px"
-            >({{ dayOfWeek }})
+          <span class="mr-1" style="font-weight: bold; padding-bottom: 2px"
+            >{{ inputDate }} ({{ dayOfWeek }})
           </span>
         </v-btn>
 
         <v-btn class="mb-3" @click="nextDate">
-          <span class="mr-2">{{ afterDate }}</span>
+          <span v-if="!this.isMobile" class="mr-2">{{ afterDate }}</span>
           <v-icon>mdi-arrow-right-bold</v-icon>
         </v-btn>
       </v-card-actions>
     </v-layout>
 
-    <v-layout justify-end>
+    <v-layout v-if="this.empAuthData.auth != 1" justify-end>
       <v-chip class="ma-2" label
         >출근 : {{ sumIn() }} / {{ sumTotal() }} 명</v-chip
       >
@@ -54,6 +54,16 @@
             </v-icon>
             <v-chip class="ma-2" small>{{ items[0].team }}</v-chip>
           </th>
+        </template>
+
+        <template v-slot:[`item.name`]="{ item }">
+          <!-- 이름 이미지 표시 -->
+          <div v-if="item.name">
+            <span>{{ item.name }}</span>
+            <span v-if="item.eb === 1">
+              <img class="pl-1" src="../assets/bird.png" style="height: 15px"
+            /></span>
+          </div>
         </template>
 
         <template v-slot:[`item.in`]="{ item }">
@@ -190,7 +200,7 @@
                   <span>퇴근시간</span>
                 </v-card>
               </v-col>
-              <v-col cols="89" class="mb-2">
+              <v-col cols="8" class="mb-2">
                 <v-card
                   class="pl-2 pr-2"
                   :class="{ cardOutline: cssOutGo }"
@@ -214,7 +224,12 @@
               </v-col>
               <v-col cols="8">
                 <v-card class="pa-2" color="grey lighten-4" outlined>
-                  <input v-model="detailTotal" type="number" disabled />
+                  <input
+                    v-model="detailTotal"
+                    type="number"
+                    style="width: 100%"
+                    disabled
+                  />
                 </v-card>
               </v-col>
             </v-row>
@@ -222,12 +237,18 @@
             <v-row no-gutters>
               <v-col cols="4" class="mb-2">
                 <v-card class="pa-2" color="grey lighten-3" outlined>
-                  <span>소정근로시간</span>
+                  <span v-if="!isMobile">소정근로시간</span>
+                  <span v-else>소정근로</span>
                 </v-card>
               </v-col>
               <v-col cols="8">
                 <v-card class="pa-2" color="grey lighten-4" outlined>
-                  <input v-model="detailSchedule" type="number" disabled />
+                  <input
+                    v-model="detailSchedule"
+                    type="number"
+                    style="width: 100%"
+                    disabled
+                  />
                 </v-card>
               </v-col>
             </v-row>
@@ -275,12 +296,18 @@
             <v-row no-gutters>
               <v-col cols="4" class="mb-2">
                 <v-card class="pa-2" color="grey lighten-3" outlined>
-                  <span>특근승인시간</span>
+                  <span v-if="!isMobile">특근승인시간</span>
+                  <span v-else>특근승인</span>
                 </v-card>
               </v-col>
               <v-col cols="8">
                 <v-card class="pa-2" color="grey lighten-4" outlined>
-                  <input v-model="detailOverAccept" type="number" disabled />
+                  <input
+                    v-model="detailOverAccept"
+                    type="number"
+                    style="width: 100%"
+                    disabled
+                  />
                 </v-card>
               </v-col>
             </v-row>
@@ -288,7 +315,8 @@
             <v-row no-gutters>
               <v-col cols="4" class="mb-2">
                 <v-card class="pa-2" color="grey lighten-3" outlined>
-                  <span>특근인정시간</span>
+                  <span v-if="!isMobile">특근인정시간</span>
+                  <span v-else>특근인정</span>
                 </v-card>
               </v-col>
               <v-col cols="8">
@@ -313,7 +341,12 @@
               </v-col>
               <v-col cols="8">
                 <v-card class="pa-2" color="grey lighten-4" outlined>
-                  <input v-model="detailNight" type="number" disabled />
+                  <input
+                    v-model="detailNight"
+                    type="number"
+                    style="width: 100%"
+                    disabled
+                  />
                 </v-card>
               </v-col>
             </v-row>
@@ -326,7 +359,12 @@
               </v-col>
               <v-col cols="8">
                 <v-card class="pa-2" color="grey lighten-4" outlined>
-                  <input v-model="detailDeduct" type="number" disabled />
+                  <input
+                    v-model="detailDeduct"
+                    type="number"
+                    style="width: 100%"
+                    disabled
+                  />
                 </v-card>
               </v-col>
             </v-row>
@@ -339,7 +377,12 @@
               </v-col>
               <v-col cols="8">
                 <v-card class="pa-2" color="grey lighten-4" outlined>
-                  <input v-model="detailWork" type="number" disabled />
+                  <input
+                    v-model="detailWork"
+                    type="number"
+                    style="width: 100%"
+                    disabled
+                  />
                 </v-card>
               </v-col>
             </v-row>
@@ -360,10 +403,12 @@
 
             <v-row no-gutters>
               <v-col cols="12" class="mt-2 mb-0">
-                <span v-if="detailModTime"
+                <span v-if="detailModTime" style="display: block"
                   >수정시간 : {{ detailModTime }}
                 </span>
-                <span v-if="detailModer"> / 관리자 : {{ detailModer }}</span>
+                <span v-if="detailModer" style="display: block"
+                  >관리자 : {{ detailModer }}</span
+                >
               </v-col>
             </v-row>
           </v-container>
@@ -402,11 +447,12 @@ import moment from "moment";
 export default {
   data() {
     return {
+      isMobile: false,
       cssInCom: false,
       cssOutGo: false,
       week: ["일", "월", "화", "수", "목", "금", "토"],
       dayOfWeek: "",
-      empRank: "", // 관리자 등급
+      empAuthData: "", // 관리자 등급
       detailName: "", //이름
       detailTeam: "", //소속
       detailInCom: "", //출근시간
@@ -464,7 +510,7 @@ export default {
   watch: {
     // 입력날짜 변경시 이전 다음 날짜 변경 후 emps 데이터 통신
     inputDate(newVal, oldVal) {
-      if (oldVal != newVal) {
+      if (newVal != "" && newVal != null && oldVal != newVal) {
         this.inputDate = newVal;
         this.beforeDate = moment(this.inputDate)
           .subtract(1, "day")
@@ -475,6 +521,8 @@ export default {
         this.getDataFromApi(this.inputDate);
 
         this.dayOfWeek = this.week[new Date(this.inputDate).getDay()];
+      } else {
+        this.inputDate = oldVal;
       }
     },
     // 휴게, 외출, 야간, 특근인정 변경
@@ -491,12 +539,26 @@ export default {
       this.changeTimeData();
     },
   },
-  // 페이시 시작시 테이블 데이터 통신
   mounted() {
+    // 디스플레이 사이즈 확인
+    this.handleResize();
+    window.addEventListener("resize", this.handleResize);
+
+    // 로그인 정보 권확 확인
+    this.empAuthAxios();
+
+    // 페이시 시작시 테이블 데이터 통신
     this.getDataFromApi(this.inputDate);
     this.dayOfWeek = this.week[new Date(this.inputDate).getDay()];
   },
+  beforeDestroy() {
+    window.removeEventListener("resize", this.handleResize);
+  },
   methods: {
+    handleResize() {
+      this.isMobile = window.innerWidth < 600;
+    },
+
     empDetailForm() {
       this.$store
         .dispatch(`empStatus/fetchEmpFormData`, {
@@ -613,16 +675,22 @@ export default {
         ) / 100;
     },
 
+    // 로그인 정보 권한 확인
+    empAuthAxios() {
+      this.$store.dispatch(`empStatus/fetchLoginEmpAuth`).then(() => {
+        this.empAuthData = this.$store.state.empStatus.empAuthData;
+      });
+    },
+
     // 사원 상세 정보 받아오고 입력 후 모달 오픈
     detailView(event, { item }) {
-      if (this.empRank === 1) {
-        console.log("관리자등급만 모달 오픈 가능");
-      }
-      // row 사원 정보 받아오기
-      this.empInfo = Object.assign({}, item);
+      if (this.empAuthData.auth == 3) {
+        // row 사원 정보 받아오기
+        this.empInfo = Object.assign({}, item);
 
-      this.detailViewDataAxios();
-      this.detailComment = "";
+        this.detailViewDataAxios();
+        this.detailComment = "";
+      }
     },
 
     // 사원 상세정보 통신 후 데이터 입력
@@ -658,11 +726,9 @@ export default {
         })
         .then(() => {
           // 출퇴근 정보 없음
-          if (this.detailErr == 1) {
+          if (this.detailErr == 1 && this.empDetail.isset == false) {
             this.cssInCom = true;
             this.cssOutGo = true;
-            this.detailInCom = this.inputDate + " 09:00:00";
-            this.detailOutGo = this.inputDate + " 18:00:00";
             this.$store
               .dispatch(`empStatus/fetchTimeCalc`, {
                 empn: this.empNo,
@@ -678,11 +744,10 @@ export default {
                 this.detailViewDataInput();
                 this.deductWorkTimeCalc();
               });
-          } else if (this.detailErr == 2) {
+          } else if (this.detailErr == 2 && this.empDetail.isset == false) {
             // 퇴근 정보 없음
             this.cssInCom = false;
             this.cssOutGo = true;
-            this.detailOutGo = this.inputDate + " 18:00:00";
             this.$store
               .dispatch(`empStatus/fetchTimeCalc`, {
                 empn: this.empNo,
@@ -798,13 +863,15 @@ export default {
 }
 
 input[type="date"] {
-  padding-left: 25px;
-  width: 105px;
+  opacity: 0;
+  position: absolute;
 }
 
 input[type="date"]::-webkit-calendar-picker-indicator {
-  left: 5px;
   position: absolute;
+  left: -25px;
+  height: 140px;
+  width: 140px;
   cursor: pointer;
 }
 </style>
